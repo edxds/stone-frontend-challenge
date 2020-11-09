@@ -4,7 +4,7 @@ import { CircularProgress, styled } from '@material-ui/core';
 import { usePrevious } from '../../utils/usePrevious';
 import regions from '../../assets/regions.json';
 
-import { useStoneMapLocation } from './context';
+import { useStoneMapFilter, useStoneMapLocation } from './context';
 import { StoneMapMarker, MARKER_URLS } from './markers';
 import { loadMapsApi, waitForMapLoad } from './loadMap';
 import { polygonContainsPoint } from './polygonContainsPoint';
@@ -26,6 +26,8 @@ export function StoneMapBase({
   ...props
 }: StoneMapBaseProps) {
   const { regionId, subregionId } = useStoneMapLocation();
+  const { filter } = useStoneMapFilter();
+
   const [map, setMap] = useState<google.maps.Map<HTMLElement> | null>(null);
 
   const selectedRegion = useMemo(() => regions.find((r) => r.id === regionId), [regionId]);
@@ -54,9 +56,14 @@ export function StoneMapBase({
     () =>
       map
         ? markers
-            ?.filter((marker) =>
-              subregionPolygon ? polygonContainsPoint(subregionPolygon, marker.position) : true,
-            )
+            ?.filter((marker) => {
+              const inFilter = filter === 'ALL' ? true : marker.type === filter;
+              const inSubregion = subregionPolygon
+                ? polygonContainsPoint(subregionPolygon, marker.position)
+                : true;
+
+              return inFilter && inSubregion;
+            })
             .map(
               (marker) =>
                 new google.maps.Marker({
@@ -65,7 +72,7 @@ export function StoneMapBase({
                 }),
             )
         : undefined,
-    [map, markers, subregionPolygon],
+    [filter, map, markers, subregionPolygon],
   );
 
   const previousFilteredMarkers = usePrevious(filteredMarkers);
