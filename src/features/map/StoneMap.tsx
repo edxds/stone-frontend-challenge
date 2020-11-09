@@ -1,16 +1,43 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { CircularProgress, styled } from '@material-ui/core';
 
+import clientMarker from '../../assets/client-marker.svg';
+import proposalMarker from '../../assets/proposal-marker.svg';
+import qualificationMarker from '../../assets/qualification-marker.svg';
+
 import { loadMap } from './loadMap';
+
+const MarkerUrls = {
+  CLIENT: clientMarker,
+  PROPOSAL: proposalMarker,
+  QUALIFICATION: qualificationMarker,
+};
+
+export type StoneMapMarker = {
+  type: 'CLIENT' | 'PROPOSAL' | 'QUALIFICATION';
+  position: google.maps.ReadonlyLatLngLiteral;
+};
 
 export type StoneMapProps = React.HTMLAttributes<HTMLDivElement> & {
   topControl?: React.ReactNode;
   bottomControl?: React.ReactNode;
+  markers?: StoneMapMarker[];
 };
 
-export function StoneMap({ topControl, bottomControl, ...props }: StoneMapProps) {
+export function StoneMap({ topControl, bottomControl, markers, ...props }: StoneMapProps) {
   const map = useRef<google.maps.Map<HTMLElement> | null>(null);
   const [mapLoaded, setMapLoaded] = useState(false);
+
+  const internalMarkers = useMemo(
+    () =>
+      mapLoaded
+        ? markers?.map(
+            (marker) =>
+              new google.maps.Marker({ position: marker.position, icon: MarkerUrls[marker.type] }),
+          )
+        : undefined,
+    [markers, mapLoaded],
+  );
 
   useEffect(() => {
     loadMap({
@@ -29,6 +56,13 @@ export function StoneMap({ topControl, bottomControl, ...props }: StoneMapProps)
       .catch((error) => console.warn('Could not load map!', error))
       .finally(() => setMapLoaded(true));
   }, []);
+
+  useEffect(() => {
+    const _map = map.current;
+    if (!_map) return;
+
+    internalMarkers?.forEach((marker) => marker.setMap(_map));
+  }, [internalMarkers, map]);
 
   return (
     <StoneMapContainer {...props}>
