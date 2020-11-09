@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { CircularProgress, styled } from '@material-ui/core';
 
 import worldPolygon from '../../assets/world-polygon.json';
@@ -20,23 +20,22 @@ export function StoneMapBase({
   region,
   ...props
 }: StoneMapBaseProps) {
-  const map = useRef<google.maps.Map<HTMLElement> | null>(null);
-  const [mapsApiLoaded, setMapsApiLoaded] = useState(false);
+  const [map, setMap] = useState<google.maps.Map<HTMLElement> | null>(null);
 
   const internalMarkers = useMemo(
     () =>
-      mapsApiLoaded
+      map
         ? markers?.map(
             (marker) =>
               new google.maps.Marker({ position: marker.position, icon: MARKER_URLS[marker.type] }),
           )
         : undefined,
-    [markers, mapsApiLoaded],
+    [map, markers],
   );
 
   const internalRegion = useMemo(
     () =>
-      mapsApiLoaded && region
+      map && region
         ? new google.maps.Polygon({
             paths: [worldPolygon, region],
             strokeColor: '#115551',
@@ -46,15 +45,13 @@ export function StoneMapBase({
             fillOpacity: 0.4,
           })
         : undefined,
-    [region, mapsApiLoaded],
+    [map, region],
   );
 
   useEffect(() => {
     const acknowledgeMapAndWaitForLoad = (loadedMap: google.maps.Map<HTMLElement>) => {
-      map.current = loadedMap;
-      setMapsApiLoaded(true);
-
-      return waitForMapLoad(map.current);
+      setMap(loadedMap);
+      return waitForMapLoad(loadedMap);
     };
 
     loadMapsApi({
@@ -75,25 +72,19 @@ export function StoneMapBase({
   }, []);
 
   useEffect(() => {
-    const _map = map.current;
-    if (!_map) return;
-
-    internalMarkers?.forEach((marker) => marker.setMap(_map));
-  }, [internalMarkers]);
+    internalMarkers?.forEach((marker) => marker.setMap(map));
+  }, [internalMarkers, map]);
 
   useEffect(() => {
-    const _map = map.current;
-    if (!_map) return;
-
-    internalRegion?.setMap(_map);
-  }, [internalRegion]);
+    internalRegion?.setMap(map);
+  }, [internalRegion, map]);
 
   return (
     <StoneMapContainer {...props}>
-      {!mapsApiLoaded && <CircularProgress size={24} />}
-      {mapsApiLoaded && topControl}
-      <div id="google-maps" style={mapsApiLoaded ? { width: '100%', flex: 1 } : {}} />
-      {mapsApiLoaded && bottomControl}
+      {!map && <CircularProgress size={24} />}
+      {map && topControl}
+      <div id="google-maps" style={map ? { width: '100%', flex: 1 } : {}} />
+      {map && bottomControl}
     </StoneMapContainer>
   );
 }
