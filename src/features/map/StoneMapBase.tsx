@@ -6,14 +6,20 @@ import regionsJson from '../../assets/regions.json';
 import { loadMapsApi, waitForMapLoad } from './loadMap';
 import { StoneMapMarker, MARKER_URLS } from './markers';
 
-export type StoneMapProps = React.HTMLAttributes<HTMLDivElement> & {
+export type StoneMapBaseProps = React.HTMLAttributes<HTMLDivElement> & {
   topControl?: React.ReactNode;
   bottomControl?: React.ReactNode;
   markers?: StoneMapMarker[];
   region?: google.maps.ReadonlyLatLngLiteral[];
 };
 
-export function StoneMap({ topControl, bottomControl, markers, region, ...props }: StoneMapProps) {
+export function StoneMapBase({
+  topControl,
+  bottomControl,
+  markers,
+  region,
+  ...props
+}: StoneMapBaseProps) {
   const map = useRef<google.maps.Map<HTMLElement> | null>(null);
   const [mapsApiLoaded, setMapsApiLoaded] = useState(false);
 
