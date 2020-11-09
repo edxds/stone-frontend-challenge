@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { CircularProgress, styled } from '@material-ui/core';
 
+import regionsJson from '../../assets/regions.json';
 
 import { loadMap } from './loadMap';
 import { StoneMapMarker, MARKER_URLS } from './markers';
@@ -9,9 +10,10 @@ export type StoneMapProps = React.HTMLAttributes<HTMLDivElement> & {
   topControl?: React.ReactNode;
   bottomControl?: React.ReactNode;
   markers?: StoneMapMarker[];
+  region?: google.maps.ReadonlyLatLngLiteral[];
 };
 
-export function StoneMap({ topControl, bottomControl, markers, ...props }: StoneMapProps) {
+export function StoneMap({ topControl, bottomControl, markers, region, ...props }: StoneMapProps) {
   const map = useRef<google.maps.Map<HTMLElement> | null>(null);
   const [mapLoaded, setMapLoaded] = useState(false);
 
@@ -24,6 +26,21 @@ export function StoneMap({ topControl, bottomControl, markers, ...props }: Stone
           )
         : undefined,
     [markers, mapLoaded],
+  );
+
+  const internalRegion = useMemo(
+    () =>
+      mapLoaded && region
+        ? new google.maps.Polygon({
+            paths: [regionsJson.world, region],
+            strokeColor: '#115551',
+            strokeOpacity: 0.6,
+            strokeWeight: 4,
+            fillColor: '#092A29',
+            fillOpacity: 0.4,
+          })
+        : undefined,
+    [region, mapLoaded],
   );
 
   useEffect(() => {
@@ -50,6 +67,13 @@ export function StoneMap({ topControl, bottomControl, markers, ...props }: Stone
 
     internalMarkers?.forEach((marker) => marker.setMap(_map));
   }, [internalMarkers]);
+
+  useEffect(() => {
+    const _map = map.current;
+    if (!_map) return;
+
+    internalRegion?.setMap(_map);
+  }, [internalRegion]);
 
   return (
     <StoneMapContainer {...props}>
