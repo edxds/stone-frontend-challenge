@@ -1,22 +1,9 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { CircularProgress, styled } from '@material-ui/core';
 
-import clientMarker from '../../assets/client-marker.svg';
-import proposalMarker from '../../assets/proposal-marker.svg';
-import qualificationMarker from '../../assets/qualification-marker.svg';
 
 import { loadMap } from './loadMap';
-
-const MarkerUrls = {
-  CLIENT: clientMarker,
-  PROPOSAL: proposalMarker,
-  QUALIFICATION: qualificationMarker,
-};
-
-export type StoneMapMarker = {
-  type: 'CLIENT' | 'PROPOSAL' | 'QUALIFICATION';
-  position: google.maps.ReadonlyLatLngLiteral;
-};
+import { StoneMapMarker, MARKER_URLS } from './markers';
 
 export type StoneMapProps = React.HTMLAttributes<HTMLDivElement> & {
   topControl?: React.ReactNode;
@@ -33,7 +20,7 @@ export function StoneMap({ topControl, bottomControl, markers, ...props }: Stone
       mapLoaded
         ? markers?.map(
             (marker) =>
-              new google.maps.Marker({ position: marker.position, icon: MarkerUrls[marker.type] }),
+              new google.maps.Marker({ position: marker.position, icon: MARKER_URLS[marker.type] }),
           )
         : undefined,
     [markers, mapLoaded],
@@ -62,7 +49,7 @@ export function StoneMap({ topControl, bottomControl, markers, ...props }: Stone
     if (!_map) return;
 
     internalMarkers?.forEach((marker) => marker.setMap(_map));
-  }, [internalMarkers, map]);
+  }, [internalMarkers]);
 
   return (
     <StoneMapContainer {...props}>
