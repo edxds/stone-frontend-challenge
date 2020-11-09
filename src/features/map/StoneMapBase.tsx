@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { CircularProgress, styled } from '@material-ui/core';
 
-import regionsJson from '../../assets/regions.json';
+import worldPolygon from '../../assets/world-polygon.json';
 
 import { loadMapsApi, waitForMapLoad } from './loadMap';
 import { StoneMapMarker, MARKER_URLS } from './markers';
@@ -38,7 +38,7 @@ export function StoneMapBase({
     () =>
       mapsApiLoaded && region
         ? new google.maps.Polygon({
-            paths: [regionsJson.world, region],
+            paths: [worldPolygon, region],
             strokeColor: '#115551',
             strokeOpacity: 0.6,
             strokeWeight: 4,
