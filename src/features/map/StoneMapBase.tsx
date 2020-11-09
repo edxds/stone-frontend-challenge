@@ -2,14 +2,14 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { CircularProgress, styled } from '@material-ui/core';
 
 import { usePrevious } from '../../utils/usePrevious';
-import worldPolygon from '../../assets/world-polygon.json';
 import regions from '../../assets/regions.json';
 
-import { loadMapsApi, waitForMapLoad } from './loadMap';
-import { StoneMapMarker, MARKER_URLS } from './markers';
-import { getPolygonBounds } from './getPolygonBounds';
-import { polygonContainsPoint } from './polygonContainsPoint';
 import { useStoneMapLocation } from './context';
+import { StoneMapMarker, MARKER_URLS } from './markers';
+import { loadMapsApi, waitForMapLoad } from './loadMap';
+import { polygonContainsPoint } from './polygonContainsPoint';
+import { makeHighlightPolygon } from './makeHighlightPolygon';
+import { getPolygonBounds } from './getPolygonBounds';
 
 export type StoneMapBaseProps = React.HTMLAttributes<HTMLDivElement> & {
   topControl?: React.ReactNode;
@@ -45,14 +45,7 @@ export function StoneMapBase({
   const subregionHighlightPolygon = useMemo(
     () =>
       map && selectedSubregion?.mapsPoly
-        ? new google.maps.Polygon({
-            paths: [worldPolygon, selectedSubregion.mapsPoly],
-            strokeColor: '#115551',
-            strokeOpacity: 0.6,
-            strokeWeight: 4,
-            fillColor: '#092A29',
-            fillOpacity: 0.4,
-          })
+        ? makeHighlightPolygon(selectedSubregion.mapsPoly)
         : undefined,
     [map, selectedSubregion],
   );
