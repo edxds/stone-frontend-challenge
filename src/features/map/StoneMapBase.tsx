@@ -1,10 +1,14 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { CircularProgress, styled } from '@material-ui/core';
 
+import { usePrevious } from '../../utils/usePrevious';
 import worldPolygon from '../../assets/world-polygon.json';
+import regions from '../../assets/regions.json';
 
 import { loadMapsApi, waitForMapLoad } from './loadMap';
 import { StoneMapMarker, MARKER_URLS } from './markers';
+import { useStoneMapLocation } from './context';
+import { getPolygonBounds } from './getPolygonBounds';
 
 export type StoneMapBaseProps = React.HTMLAttributes<HTMLDivElement> & {
   topControl?: React.ReactNode;
@@ -20,7 +24,14 @@ export function StoneMapBase({
   region,
   ...props
 }: StoneMapBaseProps) {
+  const { regionId, subregionId } = useStoneMapLocation();
   const [map, setMap] = useState<google.maps.Map<HTMLElement> | null>(null);
+
+  const selectedRegion = useMemo(() => regions.find((r) => r.id === regionId), [regionId]);
+  const selectedSubregion = useMemo(
+    () => selectedRegion?.subregions.find((sr) => sr.id === subregionId),
+    [selectedRegion?.subregions, subregionId],
+  );
 
   const internalMarkers = useMemo(
     () =>
@@ -33,11 +44,11 @@ export function StoneMapBase({
     [map, markers],
   );
 
-  const internalRegion = useMemo(
+  const internalSubregionPolygon = useMemo(
     () =>
-      map && region
+      map && selectedSubregion?.mapsPoly
         ? new google.maps.Polygon({
-            paths: [worldPolygon, region],
+            paths: [worldPolygon, selectedSubregion.mapsPoly],
             strokeColor: '#115551',
             strokeOpacity: 0.6,
             strokeWeight: 4,
@@ -45,8 +56,10 @@ export function StoneMapBase({
             fillOpacity: 0.4,
           })
         : undefined,
-    [map, region],
+    [map, selectedSubregion],
   );
+
+  const previousSubregionPolygon = usePrevious(internalSubregionPolygon);
 
   useEffect(() => {
     const acknowledgeMapAndWaitForLoad = (loadedMap: google.maps.Map<HTMLElement>) => {
@@ -76,8 +89,19 @@ export function StoneMapBase({
   }, [internalMarkers, map]);
 
   useEffect(() => {
-    internalRegion?.setMap(map);
-  }, [internalRegion, map]);
+    internalSubregionPolygon?.setMap(map);
+    previousSubregionPolygon?.setMap(null); // Clear previous polygons
+
+    if (selectedSubregion) {
+      const subregionPolygon = new google.maps.Polygon({ paths: [selectedSubregion.mapsPoly] });
+      map?.fitBounds(getPolygonBounds(subregionPolygon));
+      map?.setZoom(12);
+    }
+  }, [internalSubregionPolygon, previousSubregionPolygon, selectedSubregion, map]);
+
+  useEffect(() => {
+    selectedRegion && map?.setCenter(selectedRegion.center);
+  }, [map, selectedRegion]);
 
   return (
     <StoneMapContainer {...props}>
