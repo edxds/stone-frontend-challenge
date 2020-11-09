@@ -8,6 +8,7 @@ export type LoadMapOptions = {
 export async function loadMapsApi(options: LoadMapOptions) {
   const loader = new Loader({
     apiKey: 'AIzaSyC8nR0aHIAQW858N19UfdSVRlEIoLU2Zxs',
+    libraries: ['geometry'],
   });
 
   await loader.load();

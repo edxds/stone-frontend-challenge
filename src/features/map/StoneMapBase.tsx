@@ -7,8 +7,9 @@ import regions from '../../assets/regions.json';
 
 import { loadMapsApi, waitForMapLoad } from './loadMap';
 import { StoneMapMarker, MARKER_URLS } from './markers';
-import { useStoneMapLocation } from './context';
 import { getPolygonBounds } from './getPolygonBounds';
+import { polygonContainsPoint } from './polygonContainsPoint';
+import { useStoneMapLocation } from './context';
 
 export type StoneMapBaseProps = React.HTMLAttributes<HTMLDivElement> & {
   topControl?: React.ReactNode;
@@ -33,18 +34,15 @@ export function StoneMapBase({
     [selectedRegion?.subregions, subregionId],
   );
 
-  const internalMarkers = useMemo(
+  const subregionPolygon = useMemo(
     () =>
-      map
-        ? markers?.map(
-            (marker) =>
-              new google.maps.Marker({ position: marker.position, icon: MARKER_URLS[marker.type] }),
-          )
+      map && selectedSubregion?.mapsPoly
+        ? new google.maps.Polygon({ paths: selectedSubregion.mapsPoly })
         : undefined,
-    [map, markers],
+    [map, selectedSubregion],
   );
 
-  const internalSubregionPolygon = useMemo(
+  const subregionHighlightPolygon = useMemo(
     () =>
       map && selectedSubregion?.mapsPoly
         ? new google.maps.Polygon({
@@ -59,7 +57,26 @@ export function StoneMapBase({
     [map, selectedSubregion],
   );
 
-  const previousSubregionPolygon = usePrevious(internalSubregionPolygon);
+  const filteredMarkers = useMemo(
+    () =>
+      map
+        ? markers
+            ?.filter((marker) =>
+              subregionPolygon ? polygonContainsPoint(subregionPolygon, marker.position) : true,
+            )
+            .map(
+              (marker) =>
+                new google.maps.Marker({
+                  position: marker.position,
+                  icon: MARKER_URLS[marker.type],
+                }),
+            )
+        : undefined,
+    [map, markers, subregionPolygon],
+  );
+
+  const previousFilteredMarkers = usePrevious(filteredMarkers);
+  const previousSubregionHighlightPolygon = usePrevious(subregionHighlightPolygon);
 
   useEffect(() => {
     const acknowledgeMapAndWaitForLoad = (loadedMap: google.maps.Map<HTMLElement>) => {
@@ -85,19 +102,22 @@ export function StoneMapBase({
   }, []);
 
   useEffect(() => {
-    internalMarkers?.forEach((marker) => marker.setMap(map));
-  }, [internalMarkers, map]);
+    filteredMarkers?.forEach((marker) => marker.setMap(map));
+    if (filteredMarkers !== previousFilteredMarkers)
+      previousFilteredMarkers?.forEach((marker) => marker.setMap(null));
+  }, [filteredMarkers, previousFilteredMarkers, map]);
 
   useEffect(() => {
-    internalSubregionPolygon?.setMap(map);
-    previousSubregionPolygon?.setMap(null); // Clear previous polygons
+    subregionHighlightPolygon?.setMap(map);
+    if (subregionHighlightPolygon !== previousSubregionHighlightPolygon)
+      previousSubregionHighlightPolygon?.setMap(null); // Clear previous polygons
 
     if (selectedSubregion) {
       const subregionPolygon = new google.maps.Polygon({ paths: [selectedSubregion.mapsPoly] });
       map?.fitBounds(getPolygonBounds(subregionPolygon));
       map?.setZoom(12);
     }
-  }, [internalSubregionPolygon, previousSubregionPolygon, selectedSubregion, map]);
+  }, [subregionHighlightPolygon, previousSubregionHighlightPolygon, selectedSubregion, map]);
 
   useEffect(() => {
     selectedRegion && map?.setCenter(selectedRegion.center);
