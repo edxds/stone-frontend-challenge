@@ -3,7 +3,7 @@ import { CircularProgress, styled } from '@material-ui/core';
 
 import regionsJson from '../../assets/regions.json';
 
-import { loadMap } from './loadMap';
+import { loadMapsApi, waitForMapLoad } from './loadMap';
 import { StoneMapMarker, MARKER_URLS } from './markers';
 
 export type StoneMapProps = React.HTMLAttributes<HTMLDivElement> & {
@@ -15,22 +15,22 @@ export type StoneMapProps = React.HTMLAttributes<HTMLDivElement> & {
 
 export function StoneMap({ topControl, bottomControl, markers, region, ...props }: StoneMapProps) {
   const map = useRef<google.maps.Map<HTMLElement> | null>(null);
-  const [mapLoaded, setMapLoaded] = useState(false);
+  const [mapsApiLoaded, setMapsApiLoaded] = useState(false);
 
   const internalMarkers = useMemo(
     () =>
-      mapLoaded
+      mapsApiLoaded
         ? markers?.map(
             (marker) =>
               new google.maps.Marker({ position: marker.position, icon: MARKER_URLS[marker.type] }),
           )
         : undefined,
-    [markers, mapLoaded],
+    [markers, mapsApiLoaded],
   );
 
   const internalRegion = useMemo(
     () =>
-      mapLoaded && region
+      mapsApiLoaded && region
         ? new google.maps.Polygon({
             paths: [regionsJson.world, region],
             strokeColor: '#115551',
@@ -40,11 +40,18 @@ export function StoneMap({ topControl, bottomControl, markers, region, ...props 
             fillOpacity: 0.4,
           })
         : undefined,
-    [region, mapLoaded],
+    [region, mapsApiLoaded],
   );
 
   useEffect(() => {
-    loadMap({
+    const acknowledgeMapAndWaitForLoad = (loadedMap: google.maps.Map<HTMLElement>) => {
+      map.current = loadedMap;
+      setMapsApiLoaded(true);
+
+      return waitForMapLoad(map.current);
+    };
+
+    loadMapsApi({
       containerId: 'google-maps',
       mapOptions: {
         zoom: 12,
@@ -56,9 +63,9 @@ export function StoneMap({ topControl, bottomControl, markers, region, ...props 
         },
       },
     })
-      .then((loadedMap) => (map.current = loadedMap))
-      .catch((error) => console.warn('Could not load map!', error))
-      .finally(() => setMapLoaded(true));
+      .then((loadedMap) => acknowledgeMapAndWaitForLoad(loadedMap))
+      .then((loadedMap) => (loadedMap.getDiv().style.overflow = 'visible'))
+      .catch((error) => console.warn('Could not load map!', error));
   }, []);
 
   useEffect(() => {
@@ -77,10 +84,10 @@ export function StoneMap({ topControl, bottomControl, markers, region, ...props 
 
   return (
     <StoneMapContainer {...props}>
-      {!mapLoaded && <CircularProgress size={24} />}
-      {mapLoaded && topControl}
-      <div id="google-maps" style={mapLoaded ? { width: '100%', flex: 1 } : {}} />
-      {mapLoaded && bottomControl}
+      {!mapsApiLoaded && <CircularProgress size={24} />}
+      {mapsApiLoaded && topControl}
+      <div id="google-maps" style={mapsApiLoaded ? { width: '100%', flex: 1 } : {}} />
+      {mapsApiLoaded && bottomControl}
     </StoneMapContainer>
   );
 }
