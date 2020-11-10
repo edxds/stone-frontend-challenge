@@ -1,9 +1,13 @@
-import { createMuiTheme, fade } from '@material-ui/core';
+import { createMuiTheme, darken, fade } from '@material-ui/core';
+
+const COLOR_PRIMARY = '#24ae4b';
+
+const baseTheme = createMuiTheme();
 
 export const theme = createMuiTheme({
   palette: {
     primary: {
-      main: '#24ae4b',
+      main: COLOR_PRIMARY,
       contrastText: '#fff',
     },
   },
@@ -50,6 +54,15 @@ export const theme = createMuiTheme({
     MuiButton: {
       root: {
         textTransform: 'none',
+      },
+    },
+    MuiFormLabel: {
+      root: {
+        fontSize: '0.875rem',
+        transition: baseTheme.transitions.create('color'),
+        '&$focused': {
+          color: darken(COLOR_PRIMARY, 0.2),
+        },
       },
     },
   },
