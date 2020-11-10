@@ -63,6 +63,10 @@ const TextInputBase = withStyles((theme) => ({
       boxShadow: `${fade(theme.palette.primary.main, 0.25)} 0 0 0 0.125rem`,
       borderColor: theme.palette.primary.main,
     },
+
+    '&:disabled': {
+      backgroundColor: '#ececec',
+    },
   },
   multiline: {
     padding: 0,
