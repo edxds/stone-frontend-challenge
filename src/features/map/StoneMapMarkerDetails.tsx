@@ -60,7 +60,7 @@ export function StoneMapMarkerDetails({ marker, ...props }: StoneMapMarkerDetail
             <MdPayment color="inherit" fontSize="1.5rem" />
           </Box>
           <Typography variant="body2">
-            {currencyFormatter.format(marker.info.averageCardRevenue)}/Mês
+            {currencyFormatter.format(marker.info.averageCardRevenue / 100)}/Mês
           </Typography>
         </Box>
       </Box>
