@@ -16,6 +16,7 @@ export type StoneMapBaseProps = React.HTMLAttributes<HTMLDivElement> & {
   bottomControl?: React.ReactNode;
   markers?: StoneMapMarker[];
   region?: google.maps.ReadonlyLatLngLiteral[];
+  onMarkerClick?(id: number): void;
 };
 
 export function StoneMapBase({
@@ -23,6 +24,7 @@ export function StoneMapBase({
   bottomControl,
   markers,
   region,
+  onMarkerClick,
   ...props
 }: StoneMapBaseProps) {
   const { regionId, subregionId } = useStoneMapLocation();
@@ -64,15 +66,20 @@ export function StoneMapBase({
 
               return inFilter && inSubregion;
             })
-            .map(
-              (marker) =>
-                new google.maps.Marker({
-                  position: marker.position,
-                  icon: MARKER_URLS[marker.type],
-                }),
-            )
+            .map((marker) => {
+              const gMarker = new google.maps.Marker({
+                position: marker.position,
+                icon: MARKER_URLS[marker.type],
+              });
+
+              gMarker.addListener('click', () => {
+                onMarkerClick?.(marker.id);
+              });
+
+              return gMarker;
+            })
         : undefined,
-    [filter, map, markers, subregionPolygon],
+    [filter, map, markers, onMarkerClick, subregionPolygon],
   );
 
   const previousFilteredMarkers = usePrevious(filteredMarkers);
@@ -109,13 +116,14 @@ export function StoneMapBase({
 
   useEffect(() => {
     subregionHighlightPolygon?.setMap(map);
-    if (subregionHighlightPolygon !== previousSubregionHighlightPolygon)
+    if (subregionHighlightPolygon !== previousSubregionHighlightPolygon) {
       previousSubregionHighlightPolygon?.setMap(null); // Clear previous polygons
 
-    if (selectedSubregion) {
-      const subregionPolygon = new google.maps.Polygon({ paths: [selectedSubregion.mapsPoly] });
-      map?.fitBounds(getPolygonBounds(subregionPolygon));
-      map?.setZoom(12);
+      if (selectedSubregion) {
+        const subregionPolygon = new google.maps.Polygon({ paths: [selectedSubregion.mapsPoly] });
+        map?.fitBounds(getPolygonBounds(subregionPolygon));
+        map?.setZoom(12);
+      }
     }
   }, [subregionHighlightPolygon, previousSubregionHighlightPolygon, selectedSubregion, map]);
 
