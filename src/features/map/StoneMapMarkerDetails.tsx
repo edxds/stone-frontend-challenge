@@ -5,14 +5,13 @@ import { MdPerson, MdPayment } from 'react-icons/md';
 import { ReactComponent as ClientLIcon } from '../../assets/client-l-icon.svg';
 import { ReactComponent as ProposalLIcon } from '../../assets/proposal-l-icon.svg';
 import { ReactComponent as QualificationLIcon } from '../../assets/qualification-l-icon.svg';
+import { currencyFormatter } from '../../utils/currencyFormatter';
 
 import { StoneMapMarker, StoneMapMarkerType } from './markers';
 
 export type StoneMapMarkerDetailsProps = {
   marker: StoneMapMarker;
 } & React.HTMLAttributes<HTMLPreElement>;
-
-const currencyFormatter = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' });
 
 const AccentColorMap: { [key in StoneMapMarkerType]: string } = {
   CLIENT: '#24AE4B',
