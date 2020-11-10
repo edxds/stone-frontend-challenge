@@ -17,6 +17,7 @@ export type StoneMapBaseProps = React.HTMLAttributes<HTMLDivElement> & {
   markers?: StoneMapMarker[];
   region?: google.maps.ReadonlyLatLngLiteral[];
   onMarkerClick?(id: number): void;
+  onMapClick?(point: google.maps.LatLngLiteral): void;
 };
 
 export function StoneMapBase({
@@ -25,6 +26,7 @@ export function StoneMapBase({
   markers,
   region,
   onMarkerClick,
+  onMapClick,
   ...props
 }: StoneMapBaseProps) {
   const { regionId, subregionId } = useStoneMapLocation();
@@ -107,6 +109,12 @@ export function StoneMapBase({
       .then((loadedMap) => (loadedMap.getDiv().style.overflow = 'visible'))
       .catch((error) => console.warn('Could not load map!', error));
   }, []);
+
+  useEffect(() => {
+    if (!map) return;
+    const listener = map.addListener('click', (event) => onMapClick?.(event.latLng.toJSON()));
+    return () => google.maps.event.removeListener(listener);
+  }, [map, onMapClick]);
 
   useEffect(() => {
     filteredMarkers?.forEach((marker) => marker.setMap(map));
