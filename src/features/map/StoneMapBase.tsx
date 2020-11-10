@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { CircularProgress, styled } from '@material-ui/core';
 
-import { usePrevious } from '../../utils/usePrevious';
+import { usePrevious } from '../../hooks/usePrevious';
 import regions from '../../assets/regions.json';
 
 import { useStoneMapFilter, useStoneMapLocation } from './context';
