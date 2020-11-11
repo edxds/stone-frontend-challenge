@@ -6,18 +6,18 @@ import { ThemeProvider } from '../theme';
 import { SWRConfigProvider } from '../../components/SWRConfig';
 
 import { AppContainer } from './AppContainer';
-import { MinimumLayout } from './MinimumLayout';
+import { ResponsiveLayout } from './ResponsiveLayout';
 
 export function App() {
   return (
     <SWRConfigProvider>
       <ThemeProvider>
         <AppContainer>
-          <MinimumLayout>
+          <ResponsiveLayout>
             <Box width="100%" height="100%" clone>
               <StoneMap />
             </Box>
-          </MinimumLayout>
+          </ResponsiveLayout>
         </AppContainer>
       </ThemeProvider>
     </SWRConfigProvider>

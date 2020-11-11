@@ -1,5 +1,6 @@
 import React, { useCallback, useMemo, useState } from 'react';
-import { Drawer } from '@material-ui/core';
+
+import { ResponsiveBottomDrawer } from '../../components/ResponsiveBottomDrawer';
 
 import { StoneMapFilterContextProvider, StoneMapLocationContextProvider } from './context';
 import { StoneMapMarker, useMapMarkers, createMapMarker } from './data';
@@ -64,17 +65,15 @@ export function StoneMap(props: StoneMapProps) {
           onMapClick={handleMapClick}
           {...props}
         />
-        <Drawer
-          anchor="bottom"
+        <ResponsiveBottomDrawer
           open={markerDrawerOpen && !!selectedMarker}
           onClose={() => setMarkerDrawerOpen(false)}
         >
           {selectedMarker && (
             <StoneMapMarkerDetails marker={selectedMarker} style={{ width: '100%' }} />
           )}
-        </Drawer>
-        <Drawer
-          anchor="bottom"
+        </ResponsiveBottomDrawer>
+        <ResponsiveBottomDrawer
           open={leadDrawerOpen}
           onClose={() => setLeadDrawerOpen(false)}
           disableBackdropClick
@@ -86,7 +85,7 @@ export function StoneMap(props: StoneMapProps) {
               onSubmit={handleLeadSubmit}
             />
           )}
-        </Drawer>
+        </ResponsiveBottomDrawer>
       </StoneMapFilterContextProvider>
     </StoneMapLocationContextProvider>
   );

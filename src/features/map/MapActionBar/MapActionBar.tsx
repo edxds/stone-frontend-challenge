@@ -31,10 +31,16 @@ export const MapActionBarContainer = styled(Paper)(({ theme }) => ({
 
   margin: theme.spacing(1),
   width: `calc(100% - ${theme.spacing(2)}px)`,
+  maxWidth: theme.breakpoints.width('sm') - theme.spacing(3),
   height: 56,
 
   zIndex: 1,
   backgroundColor: 'white',
 
   borderRadius: theme.shape.borderRadius,
+
+  [theme.breakpoints.up('md')]: {
+    margin: theme.spacing(2),
+    marginLeft: -68, // Compensate for side navigation bar
+  },
 }));

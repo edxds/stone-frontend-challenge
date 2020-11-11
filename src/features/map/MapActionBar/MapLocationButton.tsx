@@ -1,10 +1,11 @@
 import React, { useMemo, useState } from 'react';
+import { Collapse, List, ListSubheader } from '@material-ui/core';
 import { MdGpsFixed } from 'react-icons/md';
-import { Collapse, Drawer, List, ListSubheader } from '@material-ui/core';
 
 import regions from '../../../assets/regions.json';
 import { iconize } from '../../../utils/iconize';
 import { SelectionListItem } from '../../../components/SelectionListItem';
+import { ResponsiveBottomDrawer } from '../../../components/ResponsiveBottomDrawer';
 
 import { useStoneMapLocation } from '../context';
 
@@ -30,7 +31,7 @@ export function MapLocationButton(props: MapLocationButtonProps) {
         {iconize(<MdGpsFixed />)}
         Localidade
       </MapActionBarButton>
-      <Drawer anchor="bottom" open={drawerOpen} onClose={() => setDrawerOpen(false)}>
+      <ResponsiveBottomDrawer open={drawerOpen} onClose={() => setDrawerOpen(false)}>
         <List style={{ width: '100%' }}>
           <ListSubheader>Região</ListSubheader>
           {regions.map((region) => (
@@ -58,7 +59,7 @@ export function MapLocationButton(props: MapLocationButtonProps) {
             ))}
           </Collapse>
         </List>
-      </Drawer>
+      </ResponsiveBottomDrawer>
     </>
   );
 }
