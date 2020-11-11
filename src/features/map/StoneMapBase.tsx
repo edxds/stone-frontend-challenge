@@ -17,7 +17,7 @@ export type StoneMapBaseProps = React.HTMLAttributes<HTMLDivElement> & {
   bottomControl?: React.ReactNode;
   markers?: StoneMapMarker[];
   region?: google.maps.ReadonlyLatLngLiteral[];
-  onMarkerClick?(id: number): void;
+  onMarkerClick?(id: string): void;
   onMapClick?(point: google.maps.LatLngLiteral): void;
 };
 

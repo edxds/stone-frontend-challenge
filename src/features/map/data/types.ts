@@ -9,8 +9,9 @@ export type StoneMapMarkerInfo = {
 };
 
 export type StoneMapMarker = {
-  id: number;
+  id: string;
   type: StoneMapMarkerType;
+  favorite: boolean;
   position: google.maps.ReadonlyLatLngLiteral;
   info: StoneMapMarkerInfo;
 };
