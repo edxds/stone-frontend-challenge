@@ -3,7 +3,7 @@ import { Box, Button, SvgIcon, Typography } from '@material-ui/core';
 import { MdPerson, MdPayment } from 'react-icons/md';
 import { FiTrash2 } from 'react-icons/fi';
 
-import { iconize } from '../../utils/iconize';
+import { ShiftBy } from '../../components/ShiftBy';
 import { FavoriteButton } from '../../components/FavoriteButton';
 import { ReactComponent as ClientLIcon } from '../../assets/client-l-icon.svg';
 import { ReactComponent as ProposalLIcon } from '../../assets/proposal-l-icon.svg';
@@ -97,7 +97,13 @@ export function StoneMapMarkerDetails({ marker, ...props }: StoneMapMarkerDetail
           <Button
             color="secondary"
             variant="text"
-            startIcon={iconize(<FiTrash2 />)}
+            startIcon={
+              <ShiftBy y={1} clone>
+                <SvgIcon>
+                  <FiTrash2 />
+                </SvgIcon>
+              </ShiftBy>
+            }
             onClick={() => setDeleteDialogOpen(true)}
           >
             Apagar
