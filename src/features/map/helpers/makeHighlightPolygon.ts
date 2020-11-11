@@ -1,4 +1,4 @@
-import worldPolygon from '../../assets/world-polygon.json';
+import worldPolygon from '../../../assets/world-polygon.json';
 
 export function makeHighlightPolygon(paths: google.maps.LatLngLiteral[]) {
   return new google.maps.Polygon({

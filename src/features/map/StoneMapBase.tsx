@@ -7,10 +7,13 @@ import regions from '../../assets/regions.json';
 import { useStoneMapFilter, useStoneMapLocation } from './context';
 import { MARKER_URLS, StoneMapMarker } from './data';
 
-import { loadMapsApi, waitForMapLoad } from './loadMap';
-import { polygonContainsPoint } from './polygonContainsPoint';
-import { makeHighlightPolygon } from './makeHighlightPolygon';
-import { getPolygonBounds } from './getPolygonBounds';
+import {
+  loadMapsApi,
+  waitForMapLoad,
+  getPolygonBounds,
+  polygonContainsPoint,
+  makeHighlightPolygon,
+} from './helpers';
 
 export type StoneMapBaseProps = React.HTMLAttributes<HTMLDivElement> & {
   topControl?: React.ReactNode;
