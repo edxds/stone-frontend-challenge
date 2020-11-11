@@ -19,7 +19,11 @@ export function MapAdvancedFiltersButton(props: MapAdvancedFiltersButtonProps) {
         {iconize(<MdFilterList />)}
         Filtrar
       </MapActionBarButton>
-      <ResponsiveBottomDrawer open={drawerOpen} onClose={() => setDrawerOpen(false)}>
+      <ResponsiveBottomDrawer
+        open={drawerOpen}
+        onClose={() => setDrawerOpen(false)}
+        ModalProps={{ keepMounted: true }}
+      >
         <List style={{ width: '100%' }}>
           <ListSubheader>Filtros Avançados</ListSubheader>
           <MapAdvancedFilterRevenue />
