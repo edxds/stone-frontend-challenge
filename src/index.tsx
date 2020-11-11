@@ -3,4 +3,11 @@ import './index.css';
 import React from 'react';
 import ReactDOM from 'react-dom';
 
-ReactDOM.render(<React.StrictMode></React.StrictMode>, document.getElementById('root'));
+import { App } from './features/app';
+
+ReactDOM.render(
+  <React.StrictMode>
+    <App />
+  </React.StrictMode>,
+  document.getElementById('root'),
+);
