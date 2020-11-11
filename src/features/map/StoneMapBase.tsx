@@ -8,7 +8,7 @@ import { useStoneMapFilters, useStoneMapLocation } from './context';
 import { MARKER_URLS, StoneMapMarker } from './data';
 
 import {
-  loadMapsApi,
+  loadMap,
   waitForMapLoad,
   getPolygonBounds,
   polygonContainsPoint,
@@ -99,7 +99,7 @@ export function StoneMapBase({
       return waitForMapLoad(loadedMap);
     };
 
-    loadMapsApi({
+    loadMap({
       containerId: 'google-maps',
       mapOptions: {
         zoom: 12,
