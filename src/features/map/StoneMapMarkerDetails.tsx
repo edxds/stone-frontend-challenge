@@ -52,18 +52,17 @@ export function StoneMapMarkerDetails({ marker, ...props }: StoneMapMarkerDetail
         onDelete={handleDelete}
       />
       <Box px={2} py={3} borderLeft={`4px solid ${AccentColorMap[marker.type]}`}>
-        <Box mb={1}>
-          <Typography variant="overline">{marker.info.shopType}</Typography>
-        </Box>
+        {/* The icon's padding is enough to separate the overline from the title */}
+        <Typography variant="overline">{marker.info.shopType}</Typography>
         <Box display="flex" alignItems="center">
           <Box flex={1} mr={2} clone>
             <Typography variant="h2">{marker.info.shopName}</Typography>
           </Box>
-          <Box fontSize="2.5rem" mx={-1} my={-2} clone>
-            <SvgIcon>
+          <ShiftBy y={4} fontSize="2.5rem">
+            <SvgIcon fontSize="inherit">
               <IconElement />
             </SvgIcon>
-          </Box>
+          </ShiftBy>
           <Box ml={1} clone>
             <FavoriteButton
               color="primary"
@@ -72,7 +71,8 @@ export function StoneMapMarkerDetails({ marker, ...props }: StoneMapMarkerDetail
             />
           </Box>
         </Box>
-        <Box display="flex" mt={1}>
+        {/* The same here */}
+        <Box display="flex">
           <Typography variant="body2" color="textPrimary">
             {marker.info.address}
           </Typography>
