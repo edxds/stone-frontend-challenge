@@ -7,7 +7,7 @@ import { ReactComponent as ProposalLIcon } from '../../assets/proposal-l-icon.sv
 import { ReactComponent as QualificationLIcon } from '../../assets/qualification-l-icon.svg';
 import { currencyFormatter } from '../../utils/currencyFormatter';
 
-import { StoneMapMarker, StoneMapMarkerType } from './markers';
+import { StoneMapMarker, StoneMapMarkerType } from './data';
 
 export type StoneMapMarkerDetailsProps = {
   marker: StoneMapMarker;

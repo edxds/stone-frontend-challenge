@@ -1,6 +1,6 @@
 import React, { useContext, useState } from 'react';
 
-import { StoneMapMarkerType } from '../markers';
+import { StoneMapMarkerType } from '../data';
 
 export type StoneMapFilterContextValue = StoneMapMarkerType | 'ALL';
 

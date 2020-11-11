@@ -5,7 +5,8 @@ import { usePrevious } from '../../hooks/usePrevious';
 import regions from '../../assets/regions.json';
 
 import { useStoneMapFilter, useStoneMapLocation } from './context';
-import { StoneMapMarker, MARKER_URLS } from './markers';
+import { MARKER_URLS, StoneMapMarker } from './data';
+
 import { loadMapsApi, waitForMapLoad } from './loadMap';
 import { polygonContainsPoint } from './polygonContainsPoint';
 import { makeHighlightPolygon } from './makeHighlightPolygon';
