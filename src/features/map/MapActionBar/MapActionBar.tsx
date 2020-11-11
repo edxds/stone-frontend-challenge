@@ -5,7 +5,8 @@ import { MdAdd } from 'react-icons/md';
 import { iconize } from '../../../utils/iconize';
 
 import { MapActionBarButton } from './MapActionBarButton';
-import { MapMarkerFilterButton } from './MapMarkerFilterButton';
+import { MapMarkerTypeFilterButton } from './MapMarkerTypeFilterButton';
+import { MapAdvancedFiltersButton } from './MapAdvancedFiltersButton';
 import { MapLocationButton } from './MapLocationButton';
 
 export type MapActionBarProps = {
@@ -16,7 +17,8 @@ export function MapActionBar({ onNewLeadClick }: MapActionBarProps) {
   return (
     <MapActionBarContainer elevation={2}>
       <MapLocationButton />
-      <MapMarkerFilterButton />
+      <MapAdvancedFiltersButton />
+      <MapMarkerTypeFilterButton />
       <MapActionBarButton onClick={onNewLeadClick}>
         {iconize(<MdAdd />)}
         Novo Lead

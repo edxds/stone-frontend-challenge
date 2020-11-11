@@ -4,7 +4,7 @@ import { CircularProgress, styled } from '@material-ui/core';
 import { usePrevious } from '../../hooks/usePrevious';
 import regions from '../../assets/regions.json';
 
-import { useStoneMapFilter, useStoneMapLocation } from './context';
+import { useStoneMapFilters, useStoneMapLocation } from './context';
 import { MARKER_URLS, StoneMapMarker } from './data';
 
 import {
@@ -34,7 +34,7 @@ export function StoneMapBase({
   ...props
 }: StoneMapBaseProps) {
   const { regionId, subregionId } = useStoneMapLocation();
-  const { filter } = useStoneMapFilter();
+  const { filters } = useStoneMapFilters();
 
   const [map, setMap] = useState<google.maps.Map<HTMLElement> | null>(null);
 
@@ -65,12 +65,14 @@ export function StoneMapBase({
       map
         ? markers
             ?.filter((marker) => {
-              const inFilter = filter === 'ALL' ? true : marker.type === filter;
+              const inFilters =
+                filters?.map((filter) => filter(marker)).find((result) => result === false) ?? true;
+
               const inSubregion = subregionPolygon
                 ? polygonContainsPoint(subregionPolygon, marker.position)
                 : true;
 
-              return inFilter && inSubregion;
+              return inFilters && inSubregion;
             })
             .map((marker) => {
               const gMarker = new google.maps.Marker({
@@ -85,7 +87,7 @@ export function StoneMapBase({
               return gMarker;
             })
         : undefined,
-    [filter, map, markers, onMarkerClick, subregionPolygon],
+    [filters, map, markers, onMarkerClick, subregionPolygon],
   );
 
   const previousFilteredMarkers = usePrevious(filteredMarkers);
